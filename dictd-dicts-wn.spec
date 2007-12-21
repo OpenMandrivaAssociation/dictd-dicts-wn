@@ -26,6 +26,7 @@ Release:	%{release}
 License:	%{license}
 Group:		%{group}
 Source:		%{src}
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch:	noarch
 BuildRequires:	%{dictd_name}-utils >= %{dictd_version}
 Provides:	dictd-dictionary = %version-%release, dictd-dictionaries = %version-%release
