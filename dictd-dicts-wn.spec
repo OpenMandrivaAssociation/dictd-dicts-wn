@@ -1,8 +1,7 @@
 %define namesuffix      wn
 %define license		Freeware
 %define summary_prefix	WordNet
-%define descr_prefix	%{summary_prefix} (r) 1.7a
-%define src		ftp://ftp.dict.org/pub/dict/pre/dict-wn_1.7a.tar.gz
+%define descr_prefix	%{summary_prefix} (r) 3.0
 %define dict_filename	%{namesuffix}
 %define conf_file	%{_sysconfdir}/dictd.conf.d/%{name}
 
@@ -12,10 +11,9 @@
 %define descr		%{descr_prefix} %{summ_desc_suf}
 %define name		dictd-dicts-%{namesuffix}
 %define version         0.1.0
-%define release         %mkrel 11
+%define release         %mkrel 12
 %define group           Databases
 
-%define __dictzip       %(which dictzip)
 %define dictd_name      dictd
 %define dictd_version   1.10.1-4
 
@@ -25,10 +23,14 @@ Version:	%{version}
 Release:	%{release}
 License:	%{license}
 Group:		%{group}
-Source:		%{src}
+Url:		ftp://ftp.cogsci.princeton.edu/pub/wordnet/
+Source0:	ftp://ftp.cogsci.princeton.edu/pub/wordnet/3.0/WordNet-3.0.tar.bz2
+# replaces wnfilter.c as formatter for raw newer (>= 2.1) wordnet data
+Source1:	http://svn.memespace.net/svn/hobby/trivialities/wordnet_tools/wordnet_structures.py
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch:	noarch
 BuildRequires:	%{dictd_name}-utils >= %{dictd_version}
+BuildRequires:	python >= 2.4
 Provides:	dictd-dictionary = %version-%release, dictd-dictionaries = %version-%release
 Requires:	%{dictd_name}-server >= %{dictd_version}
 Requires(post):	%{dictd_name}-server >= %dictd_version
@@ -41,6 +43,10 @@ Requires(postun):	%{dictd_name}-server >= %dictd_version
 %setup -c -q
 
 %build
+pushd WordNet-3.0/dict
+%_sourcedir/wordnet_structures.py {index,data}.adv {index,data}.adj {index,data}.noun {index,data}.verb
+mv wn.{index,dict} ../../
+popd
 # dictzip the dict dictionary file, if it's not yet zipped
 if ls *.dict >/dev/null 2>&1; then
 	dictzip *.dict
